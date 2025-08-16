@@ -21,9 +21,10 @@ FactoryResetHandler* factoryResetHandler = nullptr;
 // --- MQTT Message Handler ---
 void handleMqttMessage(String& topic, String& payload);
 
-// --- Status Publishing Globals ---
+// --- Status Publishing and State Globals ---
 unsigned long lastStatusPublishTime = 0;
 const unsigned long STATUS_PUBLISH_INTERVAL_MS = 15000; // 15 seconds
+bool networkWasConnected = false;
 
 // =================================================================
 // SETUP
@@ -68,6 +69,17 @@ void loop() {
     pumpController->loop();
     factoryResetHandler->loop();
     flowMeter->loop();
+
+    // --- Network Connection Event Handling ---
+    bool networkIsConnected = wifiManager.isConnected() && mqttManager.isConnected();
+    if (networkWasConnected && !networkIsConnected) {
+        Serial.println("Network connection LOST. Activating pump in manual mode as a fallback.");
+        pumpController->startManual();
+    } else if (!networkWasConnected && networkIsConnected) {
+        Serial.println("Network connection RE-ESTABLISHED. Returning pump to IDLE state.");
+        pumpController->stop(false); // false = not a command, just return to idle
+    }
+    networkWasConnected = networkIsConnected;
 
     // --- Periodic Status Publishing ---
     if (mqttManager.isConnected() && (millis() - lastStatusPublishTime > STATUS_PUBLISH_INTERVAL_MS)) {
