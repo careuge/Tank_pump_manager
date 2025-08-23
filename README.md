@@ -25,7 +25,7 @@ Questo firmware trasforma un ESP8266 in un controller intelligente per un serbat
 ## 3. Requisiti Hardware
 
 -   Scheda di sviluppo ESP8266 (es. NodeMCU, Wemos D1 Mini).
--   Sensore di distanza a ultrasuoni (es. HC-SR04).
+-   Sensore di distanza a ultrasuoni. Il modello impermeabile AJ-SR04M è consigliato e pienamente compatibile.
 -   Misuratore di flusso d'acqua (es. YF-S201).
 -   Modulo relè per controllare la pompa.
 -   Una pompa per l'acqua.
